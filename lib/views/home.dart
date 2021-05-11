@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:news_app/helper/data.dart';
+import 'package:news_app/helper/news.dart';
+import 'package:news_app/models/article_model.dart';
 import 'package:news_app/models/category_model.dart';
+import 'package:news_app/widgets/blog_tile.dart';
+import 'package:news_app/widgets/category_tile.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -10,11 +14,24 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<CategoryModel> categories = [];
+  List<ArticleModel> articles = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     categories = getCategories();
+    getNews();
+  }
+
+  void getNews() async {
+    News newsClass = News();
+    await newsClass.getnews();
+    articles = newsClass.news;
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -62,52 +79,27 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CategoryTile extends StatelessWidget {
-  final imageUrl, categoryName;
-
-  CategoryTile({this.imageUrl, this.categoryName});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        margin: EdgeInsets.only(right: 10),
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(7),
-              child: Image.network(
-                imageUrl,
-                width: 130,
-                height: 65,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              width: 130,
-              height: 65,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(7),
-                color: Colors.black38,
-              ),
-              child: Text(
-                categoryName,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            _isLoading
+                ? Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(top: 10),
+                      child: ListView.builder(
+                        itemCount: articles.length,
+                        itemBuilder: (ctx, index) {
+                          return BlogTile(
+                            imageUrl: articles[index].urlToImage,
+                            title: articles[index].title,
+                            description: articles[index].description,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),
