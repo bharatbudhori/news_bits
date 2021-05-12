@@ -22,7 +22,7 @@ class _ArticleViewState extends State<ArticleView> {
       appBar: AppBar(
         actions: [
           SizedBox(
-            width: 91,
+            width: 89,
           )
         ],
         title: Row(

@@ -22,6 +22,7 @@ class _CategoryNewsState extends State<CategoryNews> {
   @override
   void initState() {
     super.initState();
+    getCategoryNews();
     
   }
   void getCategoryNews() async {
